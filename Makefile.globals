@@ -13,16 +13,15 @@ ifndef TOP_DIR
     endif
 endif
 
-ARM_BINPATH = /usr/bin
 ARM_ABI = none-eabi
-CROSS_COMPILE = $(ARM_BINPATH)/arm-$(ARM_ABI)-
+CROSS_COMPILE = arm-$(ARM_ABI)-
 HOST_CC = gcc
 HOST_AR=$(shell which ar)
-CC = $(CROSS_COMPILE)gcc
-LD = $(CROSS_COMPILE)ld
-AR = $(CROSS_COMPILE)ar
-OBJCOPY = $(CROSS_COMPILE)objcopy
-STRIP = $(CROSS_COMPILE)strip
+CC = $(shell which $(CROSS_COMPILE)gcc)
+LD = $(shell which $(CROSS_COMPILE)ld)
+AR = $(shell which $(CROSS_COMPILE)ar)
+OBJCOPY = $(shell which $(CROSS_COMPILE)objcopy)
+STRIP = $(shell which $(CROSS_COMPILE)strip)
 
 STAT_CMD = stat -c "%n: %s bytes"
 GREP = grep
@@ -52,6 +51,20 @@ MODULES_DIR = $(TOP_DIR)/modules
 INSTALLER_FIR = ML-SETUP.FIR
 
 ML_LIBC = dietlibc.a newlib-libc.a newlib-libm.a gcc-libgcc.a
+
+LVGL_PATH ?= $(TOP_DIR)/lvgl
+
+ASRCS += $(shell find $(LVGL_PATH)/src -type f -name '*.S')
+CSRCS += $(shell find $(LVGL_PATH)/src -type f -name '*.c')
+CSRCS += $(shell find $(LVGL_PATH)/demos -type f -name '*.c')
+CSRCS += $(shell find $(LVGL_PATH)/examples -type f -name '*.c')
+CXXEXT := .cpp
+CXXSRCS += $(shell find $(LVGL_PATH)/src -type f -name '*${CXXEXT}')
+
+AFLAGS += "-I$(LVGL_PATH)"
+CFLAGS += "-I$(LVGL_PATH)"
+CXXFLAGS += "-I$(LVGL_PATH)"
+
 
 CFLAGS = -Os -D__ARM__ \
     -Wp,-MMD,$(patsubst %.o,%.d,$(dir $@)$(notdir $@)) \
