@@ -173,3 +173,6 @@ endif
 define eval_once
 $(eval $1 := $2)$(value $1)
 endef
+
+# LVGL configuration file path
+LV_CONF_PATH = "./lvgl/lv_conf.h"
